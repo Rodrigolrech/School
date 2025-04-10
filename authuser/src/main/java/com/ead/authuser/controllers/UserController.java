@@ -1,8 +1,11 @@
 package com.ead.AuthUser.controllers;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import com.ead.AuthUser.dtos.UserDto;
 import com.ead.AuthUser.models.UserModel;
-import com.ead.AuthUser.services.impl.UserServiceImpl;
+import com.ead.AuthUser.services.UserService;
 import com.ead.authuser.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.time.LocalDateTime;
@@ -30,9 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
 
-  private UserServiceImpl userService;
+  private final UserService userService;
 
-  private UserController(UserServiceImpl userService) {
+  public UserController(UserService userService) {
     this.userService = userService;
   }
 
@@ -41,6 +44,11 @@ public class UserController {
                                                       @PageableDefault (page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC)
                                                       Pageable pageable) {
     Page<UserModel> userModelPage = userService.findAll(spec, pageable);
+    if(!userModelPage.isEmpty()) {
+      for (UserModel user: userModelPage.toList()) {
+        user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel());
+      }
+    }
     return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
   }
 
