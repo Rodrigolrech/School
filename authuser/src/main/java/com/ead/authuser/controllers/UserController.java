@@ -3,6 +3,7 @@ package com.ead.AuthUser.controllers;
 import com.ead.AuthUser.dtos.UserDto;
 import com.ead.AuthUser.models.UserModel;
 import com.ead.AuthUser.services.impl.UserServiceImpl;
+import com.ead.authuser.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -36,9 +37,10 @@ public class UserController {
   }
 
   @GetMapping()
-  public ResponseEntity<Page<UserModel>> getAllUsers(@PageableDefault (page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC)
+  public ResponseEntity<Page<UserModel>> getAllUsers(SpecificationTemplate.UserSpec spec,
+                                                      @PageableDefault (page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC)
                                                       Pageable pageable) {
-    Page<UserModel> userModelPage = userService.findAllUsers(pageable);
+    Page<UserModel> userModelPage = userService.findAll(spec, pageable);
     return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
   }
 

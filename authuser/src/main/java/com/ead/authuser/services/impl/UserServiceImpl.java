@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -50,8 +51,8 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public Page<UserModel> findAllUsers(Pageable pageable) {
-    return userRepository.findAll(pageable);
+  public Page<UserModel> findAll(Specification<UserModel> spec, Pageable pageable) {
+    return userRepository.findAll(spec, pageable);
   }
 
 }
